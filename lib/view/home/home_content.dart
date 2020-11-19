@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutterapp/modle/home_bean.dart';
 import 'package:flutterapp/router/router_local.dart';
+import 'package:flutterapp/toast_flutter.dart';
 
 /// 首页的布局
 class HomeContent extends StatefulWidget {
@@ -28,20 +29,34 @@ class HomeContentWidget extends State<HomeContent> {
   Widget build(BuildContext context) {
     print(homeListData.toString());
     ScreenUtil.init(context);
-    return ListView.builder(
-      // padding: new EdgeInsets.all(30.0),
-      // itemExtent: 50.0,
-      itemCount: homeListData.length,
-      itemBuilder: (BuildContext context, int index) {
-        return itemWidget(index);
-      },
-    );
+    return RefreshIndicator(
+        child: Scaffold(
+            floatingActionButton: Icon(Icons.add),
+            body: ListView.builder(
+              // padding: new EdgeInsets.all(30.0),
+              // itemExtent: 50.0,
+              itemCount: homeListData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return itemWidget(index);
+              },
+            )),
+        onRefresh: _doRefresh);
+  }
+
+  Future<void> _doRefresh() async {
+    await Future.delayed(Duration(seconds: 2), () {
+      print("刷新");
+      setState(() {
+        HomeBean homeBean = HomeBean("text", "icon", "describe");
+        homeListData.add(homeBean);
+      });
+    });
   }
 
   Widget itemWidget(int index) {
-    return new GestureDetector(
+    return GestureDetector(
       onTap: () => {
-        print("index = $index"),
+        SYNToast.show("index = $index"),
         Navigator.of(context).pushNamed(LocalRouter.SCAFFOLD_WIDGET)
       },
       child: ContentWidget(index),
@@ -55,11 +70,14 @@ class HomeContentWidget extends State<HomeContent> {
         height: ScreenUtil().setHeight(300),
         margin: const EdgeInsets.all(10),
         color: Colors.blue,
-        child: Center(
-          child: Text(
-            homeListData[index].title,
-            style: TextStyle(fontSize: 40, color: Colors.red),
-          ),
+        child: Row(
+          children: <Widget>[
+            Image.asset("images/default_banner"),
+            Text(
+              homeListData[index].title,
+              style: TextStyle(fontSize: 18, color: Colors.red),
+            ),
+          ],
         ));
   }
 }

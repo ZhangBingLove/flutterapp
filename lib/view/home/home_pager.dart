@@ -72,7 +72,6 @@ class HomePagerWidget extends State<HomePager>
             _tabController.animateTo(index);
           },
         ),
-        drawer: Text("drawer"),
-        floatingActionButton: Icon(Icons.add));
+        drawer: Text("drawer"));
   }
 }
